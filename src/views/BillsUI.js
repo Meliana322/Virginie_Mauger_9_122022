@@ -1,8 +1,9 @@
 import VerticalLayout from './VerticalLayout.js'
 import ErrorPage from "./ErrorPage.js"
 import LoadingPage from "./LoadingPage.js"
-
 import Actions from './Actions.js'
+// Bug 1: Affichage des notes de frais par ordre décroissant ligne 24
+
 
 const row = (bill) => {
   return (`
@@ -20,7 +21,8 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+  const antiChrono = (a, b) => (a.date < b.date) ? 1 : -1;
+  return (data && data.length) ? data.sort(antiChrono).map(bill => row(bill)).join("") : ""
 }
 
 

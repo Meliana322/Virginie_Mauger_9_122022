@@ -20,6 +20,7 @@ export default class NewBill {
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    // Seulement les formats d'images jpeg/jpg/png
     const documentExtension = ["image/jpeg", "image/jpg", "image/png"]
     const isPicture = () => documentExtension.includes(file.type);
 		if (isPicture()) {
