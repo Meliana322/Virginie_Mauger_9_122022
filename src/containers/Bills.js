@@ -1,7 +1,6 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 import { formatDate, formatStatus } from "../app/format.js"
 import Logout from "./Logout.js"
-// Bug 1: Affichage des notes de frais par ordre décroissant ligne 42
 export default class {
   constructor({ document, onNavigate, store, localStorage }) {
     this.document = document
@@ -38,7 +37,6 @@ export default class {
             try {
               return {
                 ...doc,
-                // date: formatDate(doc.date),
                 formatedDate: formatDate(doc.date),
                 status: formatStatus(doc.status)
               }
