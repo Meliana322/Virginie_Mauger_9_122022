@@ -1,4 +1,6 @@
 
+// Bug 2: Login administrateur lignes 36 / 38
+
 export default () => {
 
   return(`

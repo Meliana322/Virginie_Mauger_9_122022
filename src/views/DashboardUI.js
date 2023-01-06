@@ -4,8 +4,6 @@ import LoadingPage from "./LoadingPage.js"
 import BigBilledIcon from '../assets/svg/big_billed.js'
 import { filteredBills } from '../containers/Dashboard.js'
 import ArrowIcon from '../assets/svg/arrow.js'
-// Bug 2: Un administrateur correctement logué accède au dashboard
-
 
 export default ({ data, loading, error }) => {
 
