@@ -4,6 +4,8 @@ import BigBilledIcon from '../assets/svg/big_billed.js'
 import { ROUTES_PATH } from '../constants/routes.js'
 import USERS_TEST from '../constants/usersTest.js'
 import Logout from "./Logout.js"
+// Bug 4: Ouverture de plusieurs listes et sélection d'un ticket dans n'importe quelle liste
+
 
 export const filteredBills = (data, status) => {
   return (data && data.length) ?
@@ -145,9 +147,14 @@ export default class {
       this.counter ++
     }
 
-    bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-    })
+    // bills.forEach(bill => {
+    //   $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
+    // })
+    bills.forEach((bill) => {
+			$(`#status-bills-container${this.index} #open-bill${bill.id}`).click((e) =>
+				this.handleEditTicket(e, bill, bills),
+			);
+		});
 
     return bills
 

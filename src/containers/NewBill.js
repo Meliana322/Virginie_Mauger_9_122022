@@ -1,5 +1,7 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 import Logout from "./Logout.js"
+// Bug 3: Affichage des images au formats jpeg, jpg, png (fonction handleChangeFile)
+
 
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
@@ -18,28 +20,59 @@ export default class NewBill {
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
-    const formData = new FormData()
-    const email = JSON.parse(localStorage.getItem("user")).email
-    formData.append('file', file)
-    formData.append('email', email)
+    const documentExtension = ["image/jpeg", "image/jpg", "image/png"]
+    const isPicture = () => documentExtension.includes(file.type);
+		if (isPicture()) {
+			const filePath = e.target.value.split(/\\/g);
+			const fileName = filePath[filePath.length - 1];
+			const formData = new FormData();
+			const email = JSON.parse(localStorage.getItem("user")).email;
+			formData.append("file", file);
+			formData.append("email", email);
+			if (this.store) {
+				this.store
+					.bills()
+					.create({
+						data: formData,
+						headers: {
+							noContentType: true,
+						},
+					})
+					.then(({ fileUrl, key }) => {
+						this.billId = key;
+						this.fileUrl = fileUrl;
+						this.fileName = fileName;
+					})
+					.catch((error) => console.error(error));
+			}
+		} else {
+			alert("Fichier non valide. Veuillez choisir un fichier au format image.");
+			this.document.querySelector(`input[data-testid="file"]`).value = "";
+		}
+	};
 
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true
-        }
-      })
-      .then(({fileUrl, key}) => {
-        console.log(fileUrl)
-        this.billId = key
-        this.fileUrl = fileUrl
-        this.fileName = fileName
-      }).catch(error => console.error(error))
-  }
+  //   const filePath = e.target.value.split(/\\/g)
+  //   const fileName = filePath[filePath.length-1]
+  //   const formData = new FormData()
+  //   const email = JSON.parse(localStorage.getItem("user")).email
+  //   formData.append('file', file)
+  //   formData.append('email', email)
+
+  //   this.store
+  //     .bills()
+  //     .create({
+  //       data: formData,
+  //       headers: {
+  //         noContentType: true
+  //       }
+  //     })
+  //     .then(({fileUrl, key}) => {
+  //       console.log(fileUrl)
+  //       this.billId = key
+  //       this.fileUrl = fileUrl
+  //       this.fileName = fileName
+  //     }).catch(error => console.error(error))
+  // }
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
