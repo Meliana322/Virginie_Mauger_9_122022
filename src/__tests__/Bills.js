@@ -16,8 +16,12 @@ import userEvent from "@testing-library/user-event";
 
 jest.mock("../app/Store", () => mockStore);
 
+
+//Scénario 1
 describe("Given I am connected as an employee", () => {
   //Étant donné que je suis connecté en tant qu'employé
+
+  //Scénario 1.1
 	describe("When I am on Bills Page", () => {
     //Quand je suis sur la page Factures
 		test("Then bill icon in vertical layout should be highlighted", async () => {
@@ -36,7 +40,8 @@ describe("Given I am connected as an employee", () => {
 			window.onNavigate(ROUTES_PATH.Bills);
 			await waitFor(() => screen.getByTestId("icon-window"));
 			const windowIcon = screen.getByTestId("icon-window");
-			//to-do write expect expression
+
+			//J'attends que la classe soit
 			expect(windowIcon).toHaveClass("active-icon");
 		});
 		test("Then bills should be ordered from earliest to latest", () => {
@@ -47,27 +52,37 @@ describe("Given I am connected as an employee", () => {
 				.map((a) => a.innerHTML);
 			const antiChrono = (a, b) => (a < b ? 1 : -1);
 			const datesSorted = [...dates].sort(antiChrono);
+
+      //J'attends que ce soit égal
 			expect(dates).toEqual(datesSorted);
 		});
 	});
 
+  //Scénario 1.2
 	describe("When I am on bill page but it is loading", () => {
     //Quand je suis sur la page de facturation mais qu'elle est en cours de chargement
 		test("Then, Loading page should be rendered", () => {
       //Ensuite, la page de chargement devrait être rendue
 			document.body.innerHTML = BillsUI({ loading: true });
+
+      //J'attends que ce soit vrai
 			expect(screen.getAllByText("Loading...")).toBeTruthy();
 		});
 	});
+
+  //Scénario 1.3
 	describe("When I am on bill page but back-end send an error message", () => {
     //Lorsque je suis sur la page de facturation mais que le back-end envoie un message d'erreur
 		test("Then, Error page should be rendered", () => {
       //Ensuite, la page d'erreur doit être rendue
 			document.body.innerHTML = BillsUI({ error: "some error message" });
+
+      //J'attends que ce soit vrai
 			expect(screen.getAllByText("Erreur")).toBeTruthy();
 		});
 	});
 
+  //Scénario 1.4
 	describe("When I am on Bills Page and I click on the icon eye", () => {
     //Quand je suis sur la page Factures et que je clique sur l'icône oeil
 		test("then a modal should open", () => {
@@ -104,11 +119,16 @@ describe("Given I am connected as an employee", () => {
 			expect(handleClickIconEye).toHaveBeenCalled();
 
 			const modalcontainer = document.getElementById("modaleFile");
+
+      //J'attends que ce soit vrai
 			expect(modalcontainer).toBeTruthy();
+
+      //J'attends que la fonction fictive soit appelée
 			expect(modal).toHaveBeenCalled();
 		});
 	});
 
+  //Scénario 1.5
 	describe("When I am on Bills Page and I click on the new bill button", () => {
     //Lorsque je suis sur la page Factures et que je clique sur le bouton nouvelle facture
 		test("NewBill page should render", () => {
@@ -139,18 +159,22 @@ describe("Given I am connected as an employee", () => {
 			btnNewBill.addEventListener("click", handleClickIconEye);
 			userEvent.click(btnNewBill);
 
+      //J'attends que la fonction fictive soit appelée
 			expect(handleClickIconEye).toHaveBeenCalled();
 
 			const pageNewBill = screen.getByTestId("form-new-bill");
 
+      //J'attends que ce soit vrai
 			expect(pageNewBill).toBeTruthy();
 		});
 	});
 });
 
-// test d'intégration GET
+//Scénario 2 (test d'intégration GET)
 describe("Given I am a user connected as Employee", () => {
   //Etant donné que je suis un utilisateur connecté en tant que Salarié
+
+  //Scénario 2.1
 	describe("When I navigate to Bills Page", () => {
     //Lorsque j'accède à la page Factures
 		test("fetches bills from mock API GET", async () => {
@@ -163,9 +187,16 @@ describe("Given I am a user connected as Employee", () => {
 			window.onNavigate(ROUTES_PATH.Bills);
 			await waitFor(() => screen.getByTestId("tbody"));
 			const bills = screen.getByTestId("tbody");
+
+      //J'attends que ce soit vrai
 			expect(bills).toBeTruthy();
+
+      //J'attends que ce soit égal
 			expect(bills.childElementCount).toEqual(4);
 		});
+
+
+    //Scénario 2.1.1
 		describe("When an error occurs on API", () => {
       //Lorsqu'une erreur se produit sur l'API
 			beforeEach(() => {
@@ -195,6 +226,8 @@ describe("Given I am a user connected as Employee", () => {
 				window.onNavigate(ROUTES_PATH.Bills);
 				await new Promise(process.nextTick);
 				const message = await screen.getByText(/Erreur 404/);
+
+        //J'attends que ce soit vrai
 				expect(message).toBeTruthy();
 			});
 
@@ -211,6 +244,8 @@ describe("Given I am a user connected as Employee", () => {
 				window.onNavigate(ROUTES_PATH.Bills);
 				await new Promise(process.nextTick);
 				const message = await screen.getByText(/Erreur 500/);
+
+        //J'attends que ce soit vrai
 				expect(message).toBeTruthy();
 			});
 		});
