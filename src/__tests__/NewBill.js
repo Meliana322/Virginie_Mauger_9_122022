@@ -74,43 +74,6 @@ describe("Given I am connected as an employee", () => {
 			expect(uploadFile.files[0].type).toBe("image/png");
 		});
 
-		test("Then if I upload a file with wrong extention , a alert appear and the file is not uploaded ", () => {
-      //Puis si je télécharge un fichier avec une mauvaise extension, une alerte apparaît et le fichier n'est pas téléchargé
-			jest.spyOn(window, "alert").mockImplementation(() => {});
-
-			Object.defineProperty(window, "localStorage", { value: localStorageMock });
-			window.localStorage.setItem(
-				"user",
-				JSON.stringify({
-					type: "Employee",
-				}),
-			);
-			const html = NewBillUI();
-			document.body.innerHTML = html;
-			const onNavigate = (pathname) => {
-				document.body.innerHTML = ROUTES({ pathname });
-			};
-			const handleChangeFile = jest.fn((e) =>
-				new NewBill({
-					document,
-					onNavigate,
-					store: null,
-					localStorage: window.localStorage,
-				}).handleChangeFile(e),
-			);
-			const uploadFile = screen.getByTestId("file");
-			uploadFile.addEventListener("change", handleChangeFile);
-
-			fireEvent.change(uploadFile, {
-				target: {
-					files: [new File(["image"], "fichier.pdf", { type: "application/pdf" })],
-				},
-			});
-
-			expect(handleChangeFile).toHaveBeenCalled();
-			expect(window.alert).toBeCalled();
-		});
-
     test("Then if I upload a file with wrong extention , a alert appear and the file is not uploaded ", () => {
       //Ensuite, si je télécharge un fichier avec une mauvaise extension, une alerte apparaît et le fichier n'est pas téléchargé
 			jest.spyOn(window, "alert").mockImplementation(() => {});
@@ -148,5 +111,66 @@ describe("Given I am connected as an employee", () => {
 			expect(window.alert).toBeCalled();
 		});
 	});
+
+//////
+describe("When I am on NewBill Page and I completed all required fields", () => {
+	//Lorsque je suis sur la page NewBill et que j'ai rempli tous les champs obligatoires
+	test("Then I can submit the form", async () => {
+		//Alors je peux soumettre le formulaire
+		const html = NewBillUI({});
+		document.body.innerHTML = html;
+		const onNavigate = (pathname) => {
+			document.body.innerHTML = ROUTES({ pathname });
+		};
+		Object.defineProperty(window, "localStorage", { value: localStorageMock });
+		window.localStorage.setItem(
+			"user",
+			JSON.stringify({
+				email: "azerty@email.com",
+			}),
+		);
+		const store = null;
+		const newBill = new NewBill({
+			document,
+			onNavigate,
+			store,
+			localStorage: window.localStorage,
+		});
+
+		const bill = {
+			type: "Transport",
+			name: "Vol Paris Londres",
+			amount: "300",
+			date: "2022-08-03",
+			vat: "20",
+			pct: "10",
+		};
+
+		const uploadFile = screen.getByTestId("file");
+
+		fireEvent.change(uploadFile, {
+			target: { files: [new File(["image.png"], "image.png", { type: "image/png" })] },
+		});
+
+		screen.getByTestId("datepicker").value = bill.date;
+		screen.getByTestId("expense-name").value = bill.name;
+		screen.getByTestId("expense-type").value = bill.type;
+		screen.getByTestId("amount").value = bill.amount;
+		screen.getByTestId("vat").value = bill.vat;
+		screen.getByTestId("pct").value = bill.pct;
+
+		const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+
+		newBill.updateBill = jest.fn();
+
+		const form = screen.getByTestId("form-new-bill");
+		form.addEventListener("submit", handleSubmit);
+		fireEvent.submit(form);
+		expect(handleSubmit).toHaveBeenCalled();
+		await waitFor(() => screen.getByText("Mes notes de frais"));
+		const bills = screen.getByText("Mes notes de frais");
+		expect(bills).toBeTruthy();
+	});
+});
 
 })
