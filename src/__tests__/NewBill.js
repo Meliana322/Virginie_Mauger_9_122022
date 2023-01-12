@@ -174,3 +174,100 @@ describe("When I am on NewBill Page and I completed all required fields", () => 
 });
 
 })
+
+
+/ test d'intégration POST
+describe("Given I am a user connected as Employee", () => {
+	//Etant donné que je suis un utilisateur connecté en tant que Salarié
+	describe("When I navigate to new bill Page", () => {
+		//Lorsque je navigue vers la nouvelle page de facturation
+		test("Post bill to API", async () => {
+			//Envoyer la facture à l'API
+			const create = jest.spyOn(mockStore.bills(), "create");
+			localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "e@e" }));
+			const root = document.createElement("div");
+			root.setAttribute("id", "root");
+			document.body.append(root);
+			router();
+			window.onNavigate(ROUTES_PATH.NewBill);
+			const uploadFile = screen.getByTestId("file");
+			expect(uploadFile).toBeTruthy();
+			const postData = {
+				fileUrl: "https://localhost:3456/images/test.jpg",
+				key: "1234",
+			};
+			mockStore.bills().create(postData);
+			fireEvent.change(uploadFile, {
+				target: { files: [new File(["image"], "test.jpg", { type: "image/png" })] },
+			});
+			expect(create).toHaveBeenCalled();
+			expect(create).toHaveBeenCalledWith(postData);
+		});
+
+		describe("When an error occurs on API", () => {
+			//Lorsqu'une erreur se produit sur l'API
+			beforeEach(() => {
+				jest.spyOn(mockStore, "bills");
+				jest.spyOn(console, "error");
+				Object.defineProperty(window, "localStorage", { value: localStorageMock });
+				window.localStorage.setItem(
+					"user",
+					JSON.stringify({
+						type: "Employee",
+						email: "a@a",
+					}),
+				);
+				const root = document.createElement("div");
+				root.setAttribute("id", "root");
+				document.body.appendChild(root);
+				router();
+			});
+
+			test("Try post bill to API and fails with 404 message error", async () => {
+				//Essayez de publier la facture sur l'API et échoue avec une erreur de message 404
+				const create = mockStore.bills.mockImplementationOnce(() => {
+					return {
+						create: () => {
+							return Promise.reject(new Error("Erreur 404"));
+						},
+					};
+				});
+
+				window.onNavigate(ROUTES_PATH.NewBill);
+				const uploadFile = screen.getByTestId("file");
+				expect(uploadFile).toBeTruthy();
+
+				fireEvent.change(uploadFile, {
+					target: { files: [new File(["image"], "image.png", { type: "image/png" })] },
+				});
+				expect(create).toHaveBeenCalled();
+				await new Promise(process.nextTick);
+				expect(console.error).toHaveBeenCalled();
+				expect(console.error).toHaveBeenCalledWith(Error("Erreur 404"));
+			});
+
+			test("Try post bill to API and fails with 500 message error", async () => {
+				//Essayez de publier la facture sur l'API et échoue avec une erreur de message 500
+				const create = mockStore.bills.mockImplementationOnce(() => {
+					return {
+						create: () => {
+							return Promise.reject(Error("Erreur 500"));
+						},
+					};
+				});
+
+				window.onNavigate(ROUTES_PATH.NewBill);
+				const uploadFile = screen.getByTestId("file");
+				expect(uploadFile).toBeTruthy();
+
+				fireEvent.change(uploadFile, {
+					target: { files: [new File(["image"], "image.png", { type: "image/png" })] },
+				});
+				expect(create).toHaveBeenCalled();
+				await new Promise(process.nextTick);
+				expect(console.error).toHaveBeenCalled();
+				expect(console.error).toHaveBeenCalledWith(new Error("Erreur 500"));
+			});
+		});
+	});
+});
