@@ -26,6 +26,7 @@ describe("Given I am connected as an employee", () => {
     //Quand je suis sur la page Factures
 		test("Then bill icon in vertical layout should be highlighted", async () => {
       //Ensuite, l'icône de la facture dans la disposition verticale doit être mise en surbrillance
+	  //Préparation
 			Object.defineProperty(window, "localStorage", { value: localStorageMock });
 			window.localStorage.setItem(
 				"user",
@@ -33,11 +34,14 @@ describe("Given I am connected as an employee", () => {
 					type: "Employee",
 				}),
 			);
+
 			const root = document.createElement("div");
 			root.setAttribute("id", "root");
 			document.body.append(root);
 			router();
+			//Action (je simule)
 			window.onNavigate(ROUTES_PATH.Bills);
+			//Vérification
 			await waitFor(() => screen.getByTestId("icon-window"));
 			const windowIcon = screen.getByTestId("icon-window");
 
