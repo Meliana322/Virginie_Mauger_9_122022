@@ -4,7 +4,7 @@ import BigBilledIcon from '../assets/svg/big_billed.js'
 import { ROUTES_PATH } from '../constants/routes.js'
 import USERS_TEST from '../constants/usersTest.js'
 import Logout from "./Logout.js"
-// Bug 4: Ouverture de plusieurs listes et sélection d'un ticket dans n'importe quelle liste
+// Bug 4: Ouverture de plusieurs listes et sélection d'un ticket dans n'importe quelle liste ligne 150
 
 
 export const filteredBills = (data, status) => {

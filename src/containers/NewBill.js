@@ -1,5 +1,6 @@
 import { ROUTES_PATH } from "../constants/routes.js";
 import Logout from "./Logout.js";
+// Bug 3: Format des fichiers ligne 22/23
 
 export default class NewBill {
 	constructor({ document, onNavigate, store, localStorage }) {
